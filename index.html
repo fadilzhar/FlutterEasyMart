@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Link Payment</title>
+    <link rel="shortcut icon" type="image/x-icon" href="img/a.png">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <style>
+        body {
+            font-family: 'Josefin Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #6DD5FA, #2980B9);
+            overflow: hidden;
+        }
+
+        .box {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            max-width: 450px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #2980B9;
+        }
+
+        .payment p {
+            margin: 10px 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .copy {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            background-color: #2980B9;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .copy:hover {
+            background-color: #1A5276;
+            transform: scale(1.05);
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .payment img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .qris-button {
+            background-color: #1ABC9C;
+            margin-top: 20px;
+        }
+
+        .qris-button:hover {
+            background-color: #16A085;
+        }
+
+        .icon {
+            font-size: 50px;
+            color: #2980B9;
+            margin-bottom: 15px;
+        }
+
+        /* Falling money animation */
+        .money {
+            position: absolute;
+            top: -100px;
+            font-size: 40px;
+            color: #27ae60;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Falling money container -->
+    <div id="falling-money-container"></div>
+
+    <div class="box">
+        <div class="title">Payment List</div>
+        <div class="payment">
+            <div class="icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <p><b>ShopeePay/Dana</b> (Muhammad Rival)</p>
+            <p id="p1"><b>08998419000</b></p>
+            <button class="copy" onclick="copyToClipboard('#p1')">COPY</button>
+
+            <p><b>BSI</b> (Muhammad Rival)</p>
+            <p id="p2"><b>7185946988</b></p>
+            <button class="copy" onclick="copyToClipboard('#p2')">COPY</button>
+
+            <br>
+
+            <p><b>QRIS</b> (Rival Dev)</p>
+            <a target="_blank" href="https://i.ibb.co/FbZPD4s/PHOTO-2024-03-27-08-35-44.jpg">
+                <button class="copy qris-button">SCAN QRIS</button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(element) {
+            var $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val($(element).text()).select();
+            document.execCommand("copy");
+            $temp.remove();
+            // Show success modal using SweetAlert
+            Swal.fire({
+                icon: 'success',
+                title: 'Copied!',
+                text: 'Text copied successfully!',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+
+        // Falling money animation
+        function createFallingMoney() {
+            const container = document.getElementById('falling-money-container');
+            for (let i = 0; i < 30; i++) {  // Generate 30 money symbols
+                const money = document.createElement('div');
+                money.classList.add('money');
+                money.innerHTML = '&#128176;';  // Money bag emoji
+                money.style.left = Math.random() * 100 + 'vw';  // Random horizontal position
+                money.style.animationDuration = Math.random() * 2 + 3 + 's';  // Random speed
+                container.appendChild(money);
+            }
+        }
+
+        createFallingMoney();
+    </script>
+
+</body>
+
+</html>
