@@ -21,7 +21,6 @@ class _BodyState extends State<Body> {
       height: double.infinity,
       width: double.infinity,
       child: Container(
-        color: Colors.white,
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(), // Efek bouncing saat scroll
           child: Padding(
@@ -33,7 +32,7 @@ class _BodyState extends State<Body> {
                 Text(
                   "Welcome Back",
                   style: TextStyle(
-                    color: Colors.black,
+                    color: kTextColor,
                     fontSize: getPropScreenWidth(30),
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.5,
@@ -44,7 +43,7 @@ class _BodyState extends State<Body> {
                   "Sign in with your email and password\nor continue with social media",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Colors.black,
+                    color: kPrimaryLightColor,
                     fontSize: 16,
                     height: 1.5,
                   ),
@@ -77,7 +76,7 @@ class _BodyState extends State<Body> {
                   children: [
                     const Text(
                       "Don't have an account? ",
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(color: kPrimaryLightColor),
                     ),
                     GestureDetector(
                       onTap: () {

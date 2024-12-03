@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:ui_ecommerce/model/cart.dart';
 import 'package:ui_ecommerce/screens/cart/components/item.cart.dart';
 import 'package:ui_ecommerce/size_config.dart';
+import 'package:ui_ecommerce/state_managements/cart_provider.dart';
 
 class Body extends StatefulWidget {
   const Body({super.key});
@@ -13,41 +15,40 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      physics: const BouncingScrollPhysics(),
-      itemCount: ListCart.length,
-      itemBuilder: (context, index) {
-        final Cart cart = ListCart[index];
-
-        return Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: getPropScreenWidth(20),
-            vertical: getPropScreenWidth(10),
-          ),
-          child: Dismissible(
-            key: Key(cart.product.id.toString()),
-            direction: DismissDirection.endToStart,
-            confirmDismiss: (direction) async {
-              return await _showConfirmationDialog(context);
-            },
-            onDismissed: (direction) {
-              setState(() {
-                ListCart.removeAt(index);
-              });
-
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Item berhasil dihapus!'),
-                  backgroundColor: Colors.green,
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
-            background: _buildDismissBackground(),
-            child: _buildCartItem(cart),
-          ),
-        );
-      },
+    return Consumer<CartProvider>(
+      builder: (context, cartData, child) =>
+       ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        itemCount: cartData.cartItems.length,
+        itemBuilder: (context, index) {
+    final Cart cart = cartData.cartItems[index];
+          return Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: getPropScreenWidth(20),
+              vertical: getPropScreenWidth(10),
+            ),
+            child: Dismissible(
+              key: Key(cart.product.id.toString()),
+              direction: DismissDirection.endToStart,
+              confirmDismiss: (direction) async {
+                return await _showConfirmationDialog(context);
+              },
+              onDismissed: (direction) {
+                cartData.removeCartItem(cart);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Item berhasil dihapus!'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              },
+              background: _buildDismissBackground(),
+              child: _buildCartItem(cart),
+            ),
+          );
+        },
+      ),
     );
   }
 

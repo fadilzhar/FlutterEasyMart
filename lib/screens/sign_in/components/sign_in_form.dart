@@ -5,7 +5,7 @@ import 'package:ui_ecommerce/components/my_default_button.dart';
 import 'package:ui_ecommerce/constant.dart';
 import 'package:ui_ecommerce/screens/forgot_password/forgot_password_screen.dart';
 import 'package:ui_ecommerce/screens/login_success/login_success_screen.dart';
-import 'package:ui_ecommerce/size_config.dart';
+
 
 class SignInForm extends StatefulWidget {
   const SignInForm({super.key});
@@ -65,7 +65,7 @@ class _SignInFormState extends State<SignInForm> {
           },
           activeColor: kPrimaryColor,
         ),
-        const Text("Remember me", style: TextStyle(color: Colors.black),),
+        const Text("Remember me", style: TextStyle(color: kPrimaryLightColor),),
         const Spacer(),
         GestureDetector(
           onTap: () {
@@ -75,7 +75,7 @@ class _SignInFormState extends State<SignInForm> {
             "Forgot Password",
             style: TextStyle(
               decoration: TextDecoration.underline,
-              color: Colors.black
+              color: kPrimaryLightColor
             ),
           ),
         )

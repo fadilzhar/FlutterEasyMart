@@ -1,4 +1,3 @@
-// ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
 import 'package:ui_ecommerce/constant.dart';
@@ -8,7 +7,8 @@ import 'package:ui_ecommerce/size_config.dart';
 class ItemPopularProduct extends StatelessWidget {
   const ItemPopularProduct({
     super.key,
-    required this.product, required this.press,
+    required this.product,
+    required this.press,
   });
 
   final Product product;
@@ -41,7 +41,6 @@ class ItemPopularProduct extends StatelessWidget {
               SizedBox(height: getPropScreenHeight(15)),
               Text(
                 product.title,
-                style: const TextStyle(color: Colors.black),
               ),
               const Spacer(),
               Row(

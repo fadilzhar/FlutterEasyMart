@@ -21,21 +21,26 @@ class RoundedIconBtn extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         boxShadow: [
-          if (showShadow) BoxShadow(
-            offset: const Offset(0, 6),
-            blurRadius: 10,
-            color: const Color(0xFFB0B0B0).withOpacity(0.2),
-          ),
+          if (showShadow)
+            BoxShadow(
+              offset: const Offset(0, 6),
+              blurRadius: 10,
+              color: const Color(0xFFB0B0B0).withOpacity(0.2),
+            ),
         ],
       ),
       child: TextButton(
         style: TextButton.styleFrom(
           padding: EdgeInsets.zero,
           backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
         ),
         onPressed: press,
-        child: Icon(icon),
+        child: Icon(
+          icon,
+          color: Theme.of(context).primaryColor,
+        ),
       ),
     );
   }

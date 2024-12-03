@@ -1,64 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ui_ecommerce/constant.dart';
-import 'package:ui_ecommerce/enums.dart';
+import 'package:ui_ecommerce/screens/favorite/favourite_screen.dart';
 import 'package:ui_ecommerce/screens/home/home_screen.dart';
 import 'package:ui_ecommerce/screens/profile/profile_screen.dart';
 import 'package:ui_ecommerce/size_config.dart';
 
-class CostumNavigationBar extends StatelessWidget {
-  const CostumNavigationBar({
-    super.key,
-    required this.menu,
-  });
+class CustomNavigationBar extends StatefulWidget {
+  static String routeName = "/custom_navigation_bar";
+  const CustomNavigationBar({super.key,});
 
-  final MenuState menu;
+  @override
+  State<CustomNavigationBar> createState() => _CustomNavigationBarState();
+}
+
+class _CustomNavigationBarState extends State<CustomNavigationBar> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _widgetOptions = [
+    const HomeScreen(),
+    const Text("Chat"),
+    const ProfileScreen(),
+    const FavouriteScreen()
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: getPropScreenWidth(15)),
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.only(
-          topLeft: (Radius.circular(30)),
-          topRight: (Radius.circular(30)),
-        ),
-        color: kPrimaryColor.withOpacity(0.5),
-        boxShadow: [
-          BoxShadow(
-            offset: const Offset(0, -15),
-            blurRadius: 20,
-            color: const Color(0xffdadada).withOpacity(0.30),
+        SizeConfig().init(context);
+    return Scaffold(
+      body: _widgetOptions[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        selectedItemColor: kPrimaryColor,
+        unselectedItemColor: kTextColor,
+        onTap: (value) {
+          setState(() {
+            _selectedIndex = value;
+          });
+        },
+        items: [
+          _buildNavItem(
+            iconPath: "assets/icons/Shop Icon.svg",
+            label: "Home",
+            index: 0,
+          ),
+          _buildNavItem(
+            iconPath: "assets/icons/Heart Icon.svg",
+            label: "Favorite",
+            index: 1,
+          ),
+          _buildNavItem(
+            iconPath: "assets/icons/Chat bubble Icon.svg",
+            label: "Chat",
+            index: 2,
+          ),
+          _buildNavItem(
+            iconPath: "assets/icons/User Icon.svg",
+            label: "Profile",
+            index: 3,
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          IconButton(
-              onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName, (Route<dynamic> routes) => false);
-              },
-              icon: SvgPicture.asset("assets/icons/Shop Icon.svg",
-                  color: MenuState.home == menu
-                      ? kPrimaryColor
-                      : Colors.white.withOpacity(0.5))),
-          IconButton(
-              onPressed: () {},
-              icon: SvgPicture.asset("assets/icons/Heart Icon.svg", color: Colors.white)),
-          IconButton(
-              onPressed: () {},
-              icon: SvgPicture.asset("assets/icons/Chat bubble Icon.svg", color: Colors.white)),
-          IconButton(
-              onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(context, ProfileScreen.routeName, (Route<dynamic> routes) => false);
-              },
-              icon: SvgPicture.asset("assets/icons/User Icon.svg",
-                  color: MenuState.profile == menu
-                      ? kPrimaryColor
-                      : Colors.white.withOpacity(0.5))),
-        ],
+    );
+  }
+
+  BottomNavigationBarItem _buildNavItem({
+    required String iconPath,
+    required String label,
+    required int index,
+  }) {
+    return BottomNavigationBarItem(
+      icon: SvgPicture.asset(
+        iconPath,
+        color: _selectedIndex == index ? kPrimaryColor : kTextColor,
       ),
+      label: label,
     );
   }
 }
