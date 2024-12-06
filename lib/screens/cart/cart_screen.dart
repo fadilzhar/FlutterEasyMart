@@ -1,46 +1,90 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:ui_ecommerce/screens/cart/components/body.dart';
-import 'package:ui_ecommerce/screens/cart/components/cart_bottom_navigation.dart';
-import 'package:ui_ecommerce/state_managements/cart_provider.dart';
+import '../../models/cart.dart';
+import '../../state_managements/cart_provider.dart';
+import '../details/details_screen.dart';
+import 'components/cart_card.dart';
+import 'components/check_out_card.dart';
 
-class CartScreen extends StatelessWidget {
-  static String routeName = '/cart-screen';
+class CartScreen extends StatefulWidget {
+  static String routeName = "/cart";
+
   const CartScreen({super.key});
 
   @override
+  State<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(context),
-      body: const Body(),
-      bottomNavigationBar: const CartBottomNavigation(),
-    );
-  }
-
-  AppBar appBar(BuildContext context) {
-    return AppBar(
-      leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back_ios_new_rounded)),
-      centerTitle: true,
-      title: Column(
-        children: [
-          const Text(
-            "Your Cart",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-          ),
-          Consumer<CartProvider>(
-            builder: (context, cart, child) =>
-           Text(
-              "${cart.cartItems.length} items",
+      appBar: AppBar(
+        centerTitle: true,
+        title: Column(
+          children: [
+            const Text(
+              "Your Cart",
+              style: TextStyle(color: Colors.black),
+            ),
+            Text(
+              "${context.watch<CartProvider>().items.fold<int>(0, (previousValue, cart) => previousValue + cart.numOfItem)} items",
               style: Theme.of(context).textTheme.bodySmall,
             ),
-          )
-        ],
+          ],
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Consumer<CartProvider>(
+          builder: (context, cartProvider, _) => ListView.builder(
+            itemCount: cartProvider.items.length,
+            itemBuilder: (context, index) {
+              final Cart cart = cartProvider.items[index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Dismissible(
+                  key: Key(cart.product.id.toString()),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (direction) {
+                    cartProvider.removeCart(cart);
+                  },
+                  background: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFE6E6),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Row(
+                      children: [
+                        const Spacer(),
+                        SvgPicture.asset("assets/icons/Trash.svg"),
+                      ],
+                    ),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, DetailsScreen.routeName, arguments: ProductDetailsArguments(
+                        product: cart.product
+                      ));
+                    },
+                    child: LayoutBuilder(
+                      builder: (context, constraints) => SizedBox(
+                        width: constraints.maxWidth,
+                        child: CartCard(cart: cart, numOfItem: 1,)
+                      )
+                    ),
+                  ),
+                ),
+              );
+            }
+          ),
+        ),
+      ),
+      bottomNavigationBar: CheckoutCard(
+        total: context.watch<CartProvider>().items.fold(0, (prev, cart) => prev + (cart.product.price * cart.numOfItem))
       ),
     );
   }
 }
-

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:ui_ecommerce/size_config.dart';
 
 class SectionTitle extends StatelessWidget {
   const SectionTitle({
-    super.key,
+    Key? key,
     required this.title,
-  });
+    required this.press,
+  }) : super(key: key);
 
   final String title;
+  final GestureTapCallback press;
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +17,17 @@ class SectionTitle extends StatelessWidget {
       children: [
         Text(
           title,
-          style:
-              TextStyle(fontSize: getPropScreenWidth(18), color: Colors.black),
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
         ),
-        const Text(
-          "See More",
-          style: TextStyle(color: Color(0xffbbbbbb)),
-        )
+        TextButton(
+          onPressed: press,
+          style: TextButton.styleFrom(foregroundColor: Colors.grey),
+          child: const Text("See more"),
+        ),
       ],
     );
   }

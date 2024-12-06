@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ui_ecommerce/components/costum_suffix_icon.dart';
-import 'package:ui_ecommerce/components/error_form.dart';
-import 'package:ui_ecommerce/components/my_default_button.dart';
-import 'package:ui_ecommerce/constant.dart';
-import 'package:ui_ecommerce/screens/complete_profile/complete_profile_screen.dart';
-import 'package:ui_ecommerce/size_config.dart';
+import 'package:provider/provider.dart';
+
+import '../../../components/custom_surfix_icon.dart';
+import '../../../components/form_error.dart';
+import '../../../constants.dart';
+import '../../../state_managements/auth.dart';
+import '../../complete_profile/complete_profile_screen.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({super.key});
@@ -14,12 +15,28 @@ class SignUpForm extends StatefulWidget {
 }
 
 class _SignUpFormState extends State<SignUpForm> {
+  final _formKey = GlobalKey<FormState>();
   String? email;
   String? password;
   String? confirmPassword;
+  bool remember = false;
+  final List<String?> errors = [];
 
-  final _formKey = GlobalKey<FormState>();
-  List<String> errors = [];
+  void addError({String? error}) {
+    if (!errors.contains(error)) {
+      setState(() {
+        errors.add(error);
+      });
+    }
+  }
+
+  void removeError({String? error}) {
+    if (errors.contains(error)) {
+      setState(() {
+        errors.remove(error);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,152 +44,112 @@ class _SignUpFormState extends State<SignUpForm> {
       key: _formKey,
       child: Column(
         children: [
-          emailFormField(),
-          SizedBox(height: getPropScreenHeight(30)),
-          passwordFormFiled(),
-          SizedBox(height: getPropScreenHeight(30)),
-          passwordConfirmationFormFiled(),
-          SizedBox(height: getPropScreenHeight(20)),
-          ErrorForm(errors: errors),
-          SizedBox(height: getPropScreenHeight(20)),
-          MyDefaultButton(
-            text: "Continue",
-            press: () {
+          TextFormField(
+            keyboardType: TextInputType.emailAddress,
+            onSaved: (newValue) => email = newValue,
+            onChanged: (value) {
+              if (value.isNotEmpty) {
+                removeError(error: kEmailNullError);
+              } else if (emailValidatorRegExp.hasMatch(value)) {
+                removeError(error: kInvalidEmailError);
+              }
+              email = value;
+            },
+            validator: (value) {
+              if (value!.isEmpty) {
+                addError(error: kEmailNullError);
+                return "";
+              } else if (!emailValidatorRegExp.hasMatch(value)) {
+                addError(error: kInvalidEmailError);
+                return "";
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              labelText: "Email",
+              hintText: "Enter your email",
+              // If  you are using latest version of flutter then lable text and hint text shown like this
+              // if you r using flutter less then 1.20.* then maybe this is not working properly
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
+            ),
+          ),
+          const SizedBox(height: 20),
+          TextFormField(
+            obscureText: true,
+            onSaved: (newValue) => password = newValue,
+            onChanged: (value) {
+              if (value.isNotEmpty) {
+                removeError(error: kPassNullError);
+              } else if (value.length >= 8) {
+                removeError(error: kShortPassError);
+              }
+              password = value;
+            },
+            validator: (value) {
+              if (value!.isEmpty) {
+                addError(error: kPassNullError);
+                return "";
+              } else if (value.length < 8) {
+                addError(error: kShortPassError);
+                return "";
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              labelText: "Password",
+              hintText: "Enter your password",
+              // If  you are using latest version of flutter then lable text and hint text shown like this
+              // if you r using flutter less then 1.20.* then maybe this is not working properly
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
+            ),
+          ),
+          const SizedBox(height: 20),
+          TextFormField(
+            obscureText: true,
+            onSaved: (newValue) => confirmPassword = newValue,
+            onChanged: (value) {
+              if (value.isNotEmpty) {
+                removeError(error: kPassNullError);
+              } else if (value.isNotEmpty && password == confirmPassword) {
+                removeError(error: kMatchPassError);
+              }
+              confirmPassword = value;
+            },
+            validator: (value) {
+              if (value!.isEmpty) {
+                addError(error: kPassNullError);
+                return "";
+              } else if ((password != value)) {
+                addError(error: kMatchPassError);
+                return "";
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              labelText: "Confirm Password",
+              hintText: "Re-enter your password",
+              // If  you are using latest version of flutter then lable text and hint text shown like this
+              // if you r using flutter less then 1.20.* then maybe this is not working properly
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
+            ),
+          ),
+          FormError(errors: errors),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-              }
-
-              if (errors.isEmpty) {
+                context.read<Auth>().setEmail(email);
+                // if all are valid then go to success screen
                 Navigator.pushNamed(context, CompleteProfileScreen.routeName);
               }
             },
-          )
+            child: const Text("Continue"),
+          ),
         ],
-      ),
-    );
-  }
-
-  TextFormField passwordFormFiled() {
-    return TextFormField(
-      onSaved: (newValue) => password = newValue,
-      onChanged: (value) {
-        setState(() {
-          password = value;
-        });
-        if (value.isNotEmpty && errors.contains(kPassNullError)) {
-          setState(() {
-            errors.remove(kPassNullError);
-          });
-        } else if (value.length >= 8 && errors.contains(kShortPassError)) {
-          setState(() {
-            errors.remove(kShortPassError);
-          });
-        }
-        return;
-      },
-      validator: (value) {
-        if (value!.isEmpty && !errors.contains(kPassNullError)) {
-          setState(() {
-            errors.add(kPassNullError);
-          });
-          return "";
-        } else if (value.length < 8 &&
-            (!errors.contains(kPassNullError) &&
-                !errors.contains(kShortPassError))) {
-          setState(() {
-            errors.add(kShortPassError);
-          });
-          return "";
-        }
-        return null;
-      },
-      obscureText: true,
-      decoration: const InputDecoration(
-        labelText: "Password",
-        hintText: "Enter your password",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CostomSuffixIcon(
-          icon: "assets/icons/Lock.svg",
-        ),
-      ),
-    );
-  }
-
-  TextFormField passwordConfirmationFormFiled() {
-    return TextFormField(
-      onSaved: (newValue) => confirmPassword = newValue,
-      onChanged: (value) {
-        setState(() {
-          confirmPassword = value;
-        });
-        if (password == value) {
-          setState(() {
-            errors.remove(kMatchPassError);
-          });
-        }
-      },
-      validator: (value) {
-        if (value!.isEmpty || errors.contains(kMatchPassError)) {
-          return "";
-        } else if (value != password) {
-          setState(() {
-            errors.add(kMatchPassError);
-          });
-        }
-        return null;
-      },
-      obscureText: true,
-      decoration: const InputDecoration(
-        labelText: "Password Confirmation",
-        hintText: "Re-enter your password",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CostomSuffixIcon(
-          icon: "assets/icons/Lock.svg",
-        ),
-      ),
-    );
-  }
-
-  TextFormField emailFormField() {
-    return TextFormField(
-      onSaved: (newValue) => email = newValue,
-      onChanged: (value) {
-        if (value.isNotEmpty && errors.contains(kEmailNullError)) {
-          setState(() {
-            errors.remove(kEmailNullError);
-          });
-        } else if (emailValidatorRegExp.hasMatch(value) &&
-            errors.contains(kInvalidEmailError)) {
-          setState(() {
-            errors.remove(kInvalidEmailError);
-          });
-        }
-        return;
-      },
-      validator: (value) {
-        if (value!.isEmpty && !errors.contains(kEmailNullError)) {
-          setState(() {
-            errors.add(kEmailNullError);
-          });
-          return "";
-        } else if (!emailValidatorRegExp.hasMatch(value) &&
-            (!errors.contains(kPassNullError) &&
-                !errors.contains(kInvalidEmailError))) {
-          setState(() {
-            errors.add(kInvalidEmailError);
-          });
-          return "";
-        }
-        return null;
-      },
-      keyboardType: TextInputType.emailAddress,
-      decoration: const InputDecoration(
-        labelText: "Email",
-        hintText: "Enter your email",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CostomSuffixIcon(
-          icon: "assets/icons/Mail.svg",
-        ),
       ),
     );
   }

@@ -1,46 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:ui_ecommerce/components/costum_navigation_bar.dart';
-import 'package:ui_ecommerce/screens/profile/components/body.dart';
-import 'package:ui_ecommerce/state_managements/theme_provider.dart';
+import '../../state_managements/auth.dart';
+import '../../state_managements/theme.dart';
+import '../sign_in/sign_in_screen.dart';
+import 'components/profile_menu.dart';
+import 'components/profile_pic.dart';
 
 class ProfileScreen extends StatelessWidget {
   static String routeName = "/profile";
-  const ProfileScreen({super.key});
 
+  const ProfileScreen({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(context),
-      body: const Body(),
-      bottomNavigationBar: const CustomNavigationBar(),
-    );
-  }
-
-
-  AppBar appBar(BuildContext context) {
-    return AppBar(
-      leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.arrow_back_ios_new_rounded)),
-      centerTitle: true,
-      title: Text(
-        "Profile",
-        style: Theme.of(context).textTheme.bodyLarge,
+      appBar: AppBar(
+        title: const Text("Profile"),
+        actions: [
+          IconButton(
+            onPressed: () async => await context.read<DarkMode>().toggle(),
+            icon: Icon(context.watch<DarkMode>().isEnabled ? Icons.light_mode : Icons.dark_mode),
+          ),
+        ],
       ),
-      actions: [
-        Consumer<ThemeProvider>(builder: (context, theme, child,) => 
-        IconButton(icon: Icon(
-          theme.isDarkMode ? Icons.wb_sunny : Icons.nightlight,
-          color: Theme.of(context).iconTheme.color,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        child: Column(
+          children: [
+            const ProfilePic(),
+            const SizedBox(height: 8),
+            Text(
+              context.watch<Auth>().email ?? 'Null',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ProfileMenu(
+              text: "My Account",
+              icon: "assets/icons/User Icon.svg",
+              press: () => {},
+            ),
+            ProfileMenu(
+              text: "Notifications",
+              icon: "assets/icons/Bell.svg",
+              press: () {},
+            ),
+            ProfileMenu(
+              text: "Settings",
+              icon: "assets/icons/Settings.svg",
+              press: () {},
+            ),
+            ProfileMenu(
+              text: "Help Center",
+              icon: "assets/icons/Question mark.svg",
+              press: () {},
+            ),
+            ProfileMenu(
+              text: "Log Out",
+              icon: "assets/icons/Log out.svg",
+              press: () {
+                context.read<Auth>().setIsLoggedIn(false);
+                context.read<Auth>().setEmail(null);
+                Navigator.pushNamedAndRemoveUntil(context, SignInScreen.routeName, (route) => false);
+              },
+            ),
+          ],
         ),
-        onPressed: (){
-          theme.toggleTheme(!theme.isDarkMode);
-        },)
-        )
-      ]
+      ),
     );
   }
 }

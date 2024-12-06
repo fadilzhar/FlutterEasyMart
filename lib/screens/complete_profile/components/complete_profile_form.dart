@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ui_ecommerce/components/costum_suffix_icon.dart';
-import 'package:ui_ecommerce/components/error_form.dart';
-import 'package:ui_ecommerce/components/my_default_button.dart';
-import 'package:ui_ecommerce/constant.dart';
-import 'package:ui_ecommerce/screens/otp/otp_screen.dart';
-import 'package:ui_ecommerce/size_config.dart';
+
+import '../../../components/custom_surfix_icon.dart';
+import '../../../components/form_error.dart';
+import '../../../constants.dart';
+import '../../otp/otp_screen.dart';
 
 class CompleteProfileForm extends StatefulWidget {
   const CompleteProfileForm({super.key});
@@ -14,12 +13,28 @@ class CompleteProfileForm extends StatefulWidget {
 }
 
 class _CompleteProfileFormState extends State<CompleteProfileForm> {
+  final _formKey = GlobalKey<FormState>();
+  final List<String?> errors = [];
   String? firstName;
   String? lastName;
   String? phoneNumber;
   String? address;
-  final _formKey = GlobalKey<FormState>();
-  List<String> errors = [];
+
+  void addError({String? error}) {
+    if (!errors.contains(error)) {
+      setState(() {
+        errors.add(error);
+      });
+    }
+  }
+
+  void removeError({String? error}) {
+    if (errors.contains(error)) {
+      setState(() {
+        errors.remove(error);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,150 +42,109 @@ class _CompleteProfileFormState extends State<CompleteProfileForm> {
       key: _formKey,
       child: Column(
         children: [
-          firstNameFormField(),
-          SizedBox(height: getPropScreenHeight(20)),
-          lastNameFormField(),
-          SizedBox(height: getPropScreenHeight(20)),
-          phoneNumberFormField(),
-          SizedBox(height: getPropScreenHeight(20)),
-          addressFormFiled(),
-          SizedBox(height: getPropScreenHeight(20)),
-          ErrorForm(errors: errors),
-          SizedBox(height: getPropScreenHeight(20)),
-          MyDefaultButton(
-            text: "Continue",
-            press: () {
-              if (_formKey.currentState!.validate()) {
-                _formKey.currentState!.save();
+          TextFormField(
+            onSaved: (newValue) => firstName = newValue,
+            onChanged: (value) {
+              firstName = value;
+              if (value.isNotEmpty) {
+                removeError(error: kNamelNullError);
               }
-
-              if (errors.isEmpty) {
+              return;
+            },
+            validator: (value) {
+              if (value!.isEmpty) {
+                addError(error: kNamelNullError);
+                return "";
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              labelText: "First Name",
+              hintText: "Enter your first name",
+              // If  you are using latest version of flutter then lable text and hint text shown like this
+              // if you r using flutter less then 1.20.* then maybe this is not working properly
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/User.svg"),
+            ),
+          ),
+          const SizedBox(height: 20),
+          TextFormField(
+            onSaved: (newValue) => lastName = newValue,
+            onChanged: (value) => lastName = value,
+            decoration: const InputDecoration(
+              labelText: "Last Name",
+              hintText: "Enter your last name",
+              // If  you are using latest version of flutter then lable text and hint text shown like this
+              // if you r using flutter less then 1.20.* then maybe this is not working properly
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/User.svg"),
+            ),
+          ),
+          const SizedBox(height: 20),
+          TextFormField(
+            keyboardType: TextInputType.number,
+            onSaved: (newValue) => phoneNumber = newValue,
+            onChanged: (value) {
+              phoneNumber = value;
+              if (value.isNotEmpty) {
+                removeError(error: kPhoneNumberNullError);
+              }
+              return;
+            },
+            validator: (value) {
+              if (value!.isEmpty) {
+                addError(error: kPhoneNumberNullError);
+                return "";
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              labelText: "Phone Number",
+              hintText: "Enter your phone number",
+              // If  you are using latest version of flutter then lable text and hint text shown like this
+              // if you r using flutter less then 1.20.* then maybe this is not working properly
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Phone.svg"),
+            ),
+          ),
+          const SizedBox(height: 20),
+          TextFormField(
+            onSaved: (newValue) => address = newValue,
+            onChanged: (value) {
+              address = value;
+              if (value.isNotEmpty) {
+                removeError(error: kAddressNullError);
+              }
+              return;
+            },
+            validator: (value) {
+              if (value!.isEmpty) {
+                addError(error: kAddressNullError);
+                return "";
+              }
+              return null;
+            },
+            decoration: const InputDecoration(
+              labelText: "Address",
+              hintText: "Enter your address",
+              // If  you are using latest version of flutter then lable text and hint text shown like this
+              // if you r using flutter less then 1.20.* then maybe this is not working properly
+              floatingLabelBehavior: FloatingLabelBehavior.always,
+              suffixIcon:
+                  CustomSurffixIcon(svgIcon: "assets/icons/Location point.svg"),
+            ),
+          ),
+          FormError(errors: errors),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
                 Navigator.pushNamed(context, OtpScreen.routeName);
               }
             },
+            child: const Text("Continue"),
           ),
         ],
-      ),
-    );
-  }
-
-  TextFormField addressFormFiled() {
-    return TextFormField(
-      onSaved: (newValue) => address = newValue,
-      onChanged: (value) {
-        if (value.isNotEmpty && errors.contains(kAddressNullError)) {
-          setState(() {
-            errors.remove(kAddressNullError);
-          });
-        }
-      },
-      validator: (value) {
-        if (value!.isEmpty && !errors.contains(kAddressNullError)) {
-          setState(() {
-            errors.add(kAddressNullError);
-          });
-          return "";
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        labelText: "Address",
-        hintText: "Enter your address",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CostomSuffixIcon(
-          icon: "assets/icons/Location point.svg",
-        ),
-      ),
-    );
-  }
-
-  TextFormField phoneNumberFormField() {
-    return TextFormField(
-      onSaved: (newValue) => phoneNumber = newValue!,
-      onChanged: (value) {
-        if (value.isNotEmpty) {
-          setState(() {
-            errors.remove(kPhoneNumberNullError);
-          });
-        }
-      },
-      validator: (value) {
-        if (value!.isEmpty && !errors.contains(kPhoneNumberNullError)) {
-          setState(() {
-            errors.add(kPhoneNumberNullError);
-          });
-          return "";
-        }
-        return null;
-      },
-      keyboardType: TextInputType.number,
-      decoration: const InputDecoration(
-        labelText: "Phone Number",
-        hintText: "Enter your phone number",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CostomSuffixIcon(
-          icon: "assets/icons/Phone.svg",
-        ),
-      ),
-    );
-  }
-
-  TextFormField lastNameFormField() {
-    return TextFormField(
-      onSaved: (newValue) => lastName = newValue,
-      onChanged: (value) {
-        if (value.isNotEmpty && errors.contains(kNameNullError)) {
-          setState(() {
-            errors.remove(kNameNullError);
-          });
-        }
-      },
-      validator: (value) {
-        if (value!.isEmpty && !errors.contains(kNameNullError)) {
-          setState(() {
-            errors.add(kNameNullError);
-          });
-          return "";
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        labelText: "Last Name",
-        hintText: "Enter your last name",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CostomSuffixIcon(
-          icon: "assets/icons/User.svg",
-        ),
-      ),
-    );
-  }
-
-  TextFormField firstNameFormField() {
-    return TextFormField(
-      onSaved: (newValue) => firstName = newValue,
-      onChanged: (value) {
-        if (value.isNotEmpty && errors.contains(kNameNullError)) {
-          setState(() {
-            errors.remove(kNameNullError);
-          });
-        }
-      },
-      validator: (value) {
-        if (value!.isEmpty && !errors.contains(kNameNullError)) {
-          setState(() {
-            errors.add(kNameNullError);
-          });
-          return "";
-        }
-        return null;
-      },
-      decoration: const InputDecoration(
-        labelText: "First Name",
-        hintText: "Enter your first name",
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CostomSuffixIcon(
-          icon: "assets/icons/User.svg",
-        ),
       ),
     );
   }

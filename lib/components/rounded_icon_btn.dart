@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import '../size_config.dart';
+
+import '../constants.dart';
 
 class RoundedIconBtn extends StatelessWidget {
   const RoundedIconBtn({
-    super.key,
+    Key? key,
     required this.icon,
-    required this.press,
+    this.press,
     this.showShadow = false,
-  });
+  }) : super(key: key);
 
   final IconData icon;
   final GestureTapCancelCallback? press;
@@ -16,8 +17,8 @@ class RoundedIconBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: getPropScreenWidth(40),
-      width: getPropScreenWidth(40),
+      height: 40,
+      width: 40,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         boxShadow: [
@@ -31,16 +32,14 @@ class RoundedIconBtn extends StatelessWidget {
       ),
       child: TextButton(
         style: TextButton.styleFrom(
+          foregroundColor: kPrimaryColor,
           padding: EdgeInsets.zero,
           backgroundColor: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
         ),
         onPressed: press,
-        child: Icon(
-          icon,
-          color: Theme.of(context).primaryColor,
-        ),
+        child: Icon(icon),
       ),
     );
   }

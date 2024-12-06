@@ -1,46 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:ui_ecommerce/constant.dart';
-import 'package:ui_ecommerce/size_config.dart';
 
-class SplashContent extends StatelessWidget {
+class SplashContent extends StatefulWidget {
   const SplashContent({
-    super.key,
-    required this.text,
-    required this.image,
-  });
+    Key? key,
+    this.text,
+    this.image,
+  }) : super(key: key);
+  final String? text, image;
 
-  final String text, image;
+  @override
+  State<SplashContent> createState() => _SplashContentState();
+}
 
+class _SplashContentState extends State<SplashContent> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
         const Spacer(),
         Text(
-          "EasyMart",
-          style: TextStyle(
-              fontSize: getPropScreenWidth(36),
-              color: kPrimaryColor,
-              fontWeight: FontWeight.bold,
-              fontFamily: "monospace",
-              ),
-        ),
-        Text(
-          text,
+          widget.text!,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: kTextColor,
-            fontSize: getPropScreenWidth(16),
-          ),
         ),
-        const Spacer(
-          flex: 2,
-        ),
-        Image.asset(
-          image,
-          height: 200,
-          width: 200,
-        )
+        const Spacer(),
+        widget.image != null ? Image.asset(
+          widget.image!,
+          height: 265,
+          width: 235,
+        ) : const SizedBox(),
+        widget.image != null ? const Spacer() : const SizedBox()
       ],
     );
   }
